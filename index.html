@@ -74,6 +74,70 @@
     }
     .hist-badge.show { display: flex; }
 
+    /* CURRENCY BUTTON */
+    .curr-icon-btn {
+      background: rgba(245,197,0,0.12); border: 1px solid rgba(245,197,0,0.3);
+      border-radius: 10px; width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background 0.15s, transform 0.15s; position: relative;
+    }
+    .curr-icon-btn:hover { background: rgba(245,197,0,0.22); }
+    .curr-icon-btn.active { background: rgba(245,197,0,0.28); transform: scale(0.94); }
+    .curr-icon-btn svg { width: 18px; height: 18px; }
+
+    /* CURRENCY PANEL */
+    .currency-panel {
+      width: 100%; background: #0d1526; overflow: hidden;
+      max-height: 0; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+      border-bottom: 0px solid #F5C500;
+    }
+    .currency-panel.open { max-height: 320px; border-bottom: 2px solid #F5C500; }
+    .currency-amount-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    }
+    .currency-amount-label { font-size: 10px; color: #A8D4F5; font-family: "Poppins", sans-serif; width: 32px; flex-shrink: 0; }
+    .currency-amount-input {
+      flex: 1; background: #1a2640; border: 1px solid rgba(245,197,0,0.4);
+      color: #F5C500; border-radius: 8px; padding: 6px 10px;
+      font-family: "Share Tech Mono", monospace; font-size: 14px; font-weight: 700;
+      outline: none; text-align: right;
+    }
+    .currency-amount-input:focus { border-color: #F5C500; box-shadow: 0 0 0 2px rgba(245,197,0,0.15); }
+    .currency-from-label { font-size: 11px; color: #aaa; font-family: "Poppins", sans-serif; flex-shrink: 0; }
+    .currency-inner { padding: 12px 16px 14px; }
+    .currency-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    }
+    .currency-row label { font-size: 10px; color: #A8D4F5; font-family: "Poppins", sans-serif; width: 32px; flex-shrink: 0; }
+    .currency-select {
+      flex: 1; background: #1a2640; border: 1px solid rgba(245,197,0,0.3);
+      color: #fff; border-radius: 8px; padding: 6px 8px;
+      font-family: "Poppins", sans-serif; font-size: 12px; font-weight: 600;
+      cursor: pointer; outline: none;
+    }
+    .currency-select:focus { border-color: #F5C500; }
+    .currency-swap-btn {
+      background: rgba(245,197,0,0.15); border: 1px solid rgba(245,197,0,0.3);
+      border-radius: 8px; width: 32px; height: 32px; color: #F5C500;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px; transition: background 0.15s; flex-shrink: 0;
+    }
+    .currency-swap-btn:hover { background: rgba(245,197,0,0.28); }
+    .currency-result-box {
+      background: #111e35; border-radius: 10px; padding: 10px 14px;
+      text-align: center; border: 1px solid rgba(245,197,0,0.15);
+    }
+    .currency-result-value {
+      font-family: "Share Tech Mono", monospace; font-size: 22px; font-weight: 700;
+      color: #F5C500; letter-spacing: -0.5px;
+    }
+    .currency-result-meta {
+      font-size: 10px; color: #4a6a9a; margin-top: 3px;
+      font-family: "Poppins", sans-serif;
+    }
+    .currency-loading { font-size: 11px; color: #4a6a9a; text-align: center; padding: 8px 0; font-family: "Poppins", sans-serif; }
+    .currency-error { font-size: 11px; color: #ff5252; text-align: center; padding: 8px 0; font-family: "Poppins", sans-serif; }
+
     /* HISTORY PANEL */
     .history-panel {
       width: 100%; background: #0d1526; overflow: hidden;
@@ -115,7 +179,7 @@
     }
 
     .expression {
-      font-family: "Share Tech Mono", monospace; font-size: 12px; color: #4a6a9a;
+      font-family: "Share Tech Mono", monospace; font-size: 15px; color: #ffffff;
       min-height: 16px; text-align: right;
     }
     .result {
@@ -213,6 +277,11 @@
         <div class="subtitle">Smart Calculator</div>
         <div class="creator">&#10022; by Idrees A.I Wala</div>
       </div>
+      <div class="curr-icon-btn" id="currBtn" onclick="toggleCurrency()" title="Currency Converter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F5C500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
       <div class="hist-icon-btn" id="histBtn" onclick="toggleHistory()" title="Calculation History">
         <svg viewBox="0 0 24 24" fill="none" stroke="#F5C500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
@@ -226,6 +295,44 @@
     <div class="display">
       <div class="expression" id="expression"></div>
       <div class="result" id="result">0</div>
+    </div>
+
+    <!-- CURRENCY PANEL inside calculator above buttons -->
+    <div class="currency-panel" id="currencyPanel">
+      <div class="currency-inner">
+        <div class="currency-row">
+          <label>From</label>
+          <select class="currency-select" id="currFrom" onchange="convertCurrency()">
+            <option value="PKR">🇵🇰 PKR</option>
+            <option value="USD">🇺🇸 USD</option>
+            <option value="GBP">🇬🇧 GBP</option>
+            <option value="EUR">🇪🇺 EUR</option>
+            <option value="AED">🇦🇪 AED</option>
+            <option value="SAR">🇸🇦 SAR</option>
+            <option value="CNY">🇨🇳 CNY</option>
+            <option value="CAD">🇨🇦 CAD</option>
+          </select>
+          <div class="currency-swap-btn" onclick="swapCurrencies()" title="Swap">&#8645;</div>
+          <select class="currency-select" id="currTo" onchange="convertCurrency()">
+            <option value="USD">🇺🇸 USD</option>
+            <option value="PKR">🇵🇰 PKR</option>
+            <option value="GBP">🇬🇧 GBP</option>
+            <option value="EUR">🇪🇺 EUR</option>
+            <option value="AED">🇦🇪 AED</option>
+            <option value="SAR">🇸🇦 SAR</option>
+            <option value="CNY">🇨🇳 CNY</option>
+            <option value="CAD">🇨🇦 CAD</option>
+          </select>
+        </div>
+        <div class="currency-amount-row">
+          <span class="currency-amount-label">Amount</span>
+          <input class="currency-amount-input" type="number" id="currAmount" value="1" min="0" oninput="convertCurrency()" onclick="this.select()"/>
+          <span class="currency-from-label" id="currFromLabel">PKR</span>
+        </div>
+        <div class="currency-result-box" id="currResultBox">
+          <div class="currency-loading">Panel kholne ke baad rate load hoga...</div>
+        </div>
+      </div>
     </div>
 
     <!-- HISTORY PANEL inside calculator above buttons -->
@@ -330,7 +437,20 @@
 
   function updateExpr() {
     if (op && prev) {
+      // Show expression in small bar (white text)
       expr.textContent = prev + " " + SYM[op] + " " + current;
+      // Compute live result and show in main big display
+      const a = parseFloat(prev), b = parseFloat(current);
+      let r;
+      if (op === "+") r = a + b;
+      else if (op === "-") r = a - b;
+      else if (op === "*") r = a * b;
+      else if (op === "/") r = b === 0 ? null : a / b;
+      const liveResult = (r !== null && r !== undefined && !isNaN(r))
+        ? (Number.isInteger(r) ? r : parseFloat(r.toFixed(8))) : null;
+      if (liveResult !== null) {
+        res.textContent = String(liveResult);
+      }
     }
   }
 
@@ -363,10 +483,10 @@
     const displayVal = typeof r === "number"
       ? (Number.isInteger(r) ? r : parseFloat(r.toFixed(8))) : r;
     if (!chain) {
-      // Show expression above result on screen
-      expr.textContent = prev + " " + SYM[op] + " " + current + " =";
       // Stage for history — saved when user starts next operation
       pendingHistory = { expr: prev + " " + SYM[op] + " " + current, ans: String(displayVal) };
+      // Clear expression — only result shows on screen
+      expr.textContent = "";
     }
     current = String(displayVal);
     op = null; prev = ""; reset = true;
@@ -425,6 +545,78 @@
   function percentage() {
     current = String(parseFloat(current) / 100);
     updateDisplay(current);
+  }
+
+  // ── CURRENCY CONVERTER ────────────────────────────────────
+  const API_KEY = "19da6ab6f395a354217ebefa";
+  let currOpen = false;
+  let rateCache = {};  // cache: "USD_PKR" -> {rate, time}
+
+  function toggleCurrency() {
+    currOpen = !currOpen;
+    document.getElementById("currencyPanel").classList.toggle("open", currOpen);
+    document.getElementById("currBtn").classList.toggle("active", currOpen);
+    if (currOpen) convertCurrency();
+  }
+
+  async function convertCurrency() {
+    const from = document.getElementById("currFrom").value;
+    const to   = document.getElementById("currTo").value;
+    const box  = document.getElementById("currResultBox");
+    const amtInput = document.getElementById("currAmount");
+    const fromLabel = document.getElementById("currFromLabel");
+    if (fromLabel) fromLabel.textContent = from;
+    const amount = parseFloat(amtInput ? amtInput.value : 1) || 1;
+
+    if (from === to) {
+      box.innerHTML = `<div class="currency-result-value">${amount} ${to}</div><div class="currency-result-meta">Same currency</div>`;
+      return;
+    }
+
+    const cacheKey = from + "_" + to;
+    const now = Date.now();
+
+    // Use cache if less than 1 hour old
+    if (rateCache[cacheKey] && (now - rateCache[cacheKey].time) < 3600000) {
+      showRate(amount, from, to, rateCache[cacheKey].rate, box, true);
+      return;
+    }
+
+    box.innerHTML = '<div class="currency-loading">&#9696; Rate load ho raha hai...</div>';
+    try {
+      const res = await fetch(`https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${from}/${to}`);
+      const data = await res.json();
+      if (data.result === "success") {
+        const rate = data.conversion_rate;
+        rateCache[cacheKey] = { rate, time: now };
+        showRate(amount, from, to, rate, box, false);
+      } else {
+        box.innerHTML = '<div class="currency-error">&#9888; Rate load nahi hua. Network check karo.</div>';
+      }
+    } catch(e) {
+      box.innerHTML = '<div class="currency-error">&#9888; Internet connection check karo.</div>';
+    }
+  }
+
+  function showRate(amount, from, to, rate, box, cached) {
+    const converted = (amount * rate).toFixed(4);
+    const singleRate = rate.toFixed(6);
+    const today = new Date().toLocaleDateString("en-PK", { day:"2-digit", month:"short", year:"numeric" });
+    box.innerHTML = `
+      <div class="currency-result-value">${converted} ${to}</div>
+      <div class="currency-result-meta">1 ${from} = ${singleRate} ${to} &nbsp;|&nbsp; ${cached ? "Cached" : today}</div>
+    `;
+  }
+
+  function swapCurrencies() {
+    const f = document.getElementById("currFrom");
+    const t = document.getElementById("currTo");
+    const tmp = f.value;
+    f.value = t.value;
+    t.value = tmp;
+    const lbl = document.getElementById("currFromLabel");
+    if (lbl) lbl.textContent = f.value;
+    convertCurrency();
   }
 
   document.addEventListener("keydown", e => {
